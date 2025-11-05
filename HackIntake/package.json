@@ -1,0 +1,49 @@
+{
+  "name": "hackintake",
+  "version": "1.0.0",
+  "description": "Modern mobile app for streamlining hackathon problem statement submissions and management",
+  "main": "index.ts",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "clear": "expo start -c"
+  },
+  "keywords": [
+    "hackathon",
+    "react-native",
+    "expo",
+    "problem-management",
+    "mobile-app"
+  ],
+  "author": "HackIntake Team",
+  "license": "MIT",
+  "dependencies": {
+    "@expo/vector-icons": "^15.0.3",
+    "@hookform/resolvers": "^5.2.2",
+    "@react-navigation/bottom-tabs": "^7.7.3",
+    "@react-navigation/native": "^7.1.19",
+    "@react-navigation/native-stack": "^7.6.2",
+    "babel-preset-expo": "^54.0.6",
+    "expo": "~54.0.22",
+    "expo-document-picker": "^14.0.7",
+    "expo-image-picker": "^17.0.8",
+    "expo-status-bar": "~3.0.8",
+    "firebase": "^12.5.0",
+    "nativewind": "^4.2.1",
+    "react": "19.1.0",
+    "react-hook-form": "^7.66.0",
+    "react-native": "0.81.5",
+    "react-native-safe-area-context": "^5.6.2",
+    "react-native-screens": "4.16.0",
+    "tailwindcss": "^3.4.18",
+    "yup": "^1.7.1",
+    "zustand": "^5.0.8"
+  },
+  "devDependencies": {
+    "@types/react": "~19.1.0",
+    "typescript": "~5.9.2"
+  },
+  "private": true
+}
