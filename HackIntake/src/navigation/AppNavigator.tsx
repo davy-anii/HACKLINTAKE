@@ -8,10 +8,12 @@ import { useAppStore } from '../store/appStore';
 import { DashboardScreen } from '../screens/DashboardScreen';
 import { SubmitProblemScreen } from '../screens/SubmitProblemScreen';
 import { MentorPanelScreen } from '../screens/MentorPanelScreen';
-import { TeamViewScreen } from '../screens/TeamViewScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { ProblemDetailScreen } from '../screens/ProblemDetailScreen';
+import { ProblemsStatementScreen } from '../screens/ProblemsStatementScreen';
+import { AIGeneratorScreen } from '../screens/AIGeneratorScreen';
 import { AuthScreen } from '../screens/AuthScreen';
+import { RoleSelectionScreen } from '../screens/RoleSelectionScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
 
 const Tab = createBottomTabNavigator();
@@ -37,43 +39,47 @@ const MentorStack = () => {
   );
 };
 
-const TeamStack = () => {
+const ProblemsStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="TeamView" component={TeamViewScreen} />
+      <Stack.Screen name="ProblemsStatement" component={ProblemsStatementScreen} />
+      <Stack.Screen name="SubmitProblem" component={SubmitProblemScreen} />
       <Stack.Screen name="ProblemDetail" component={ProblemDetailScreen} />
     </Stack.Navigator>
   );
 };
 
 const MainTabs = () => {
-  const { colors } = useTheme();
+  const { colors, theme } = useTheme();
   const { user } = useAppStore();
 
-  const isMentorOrAdmin = user?.role === 'mentor' || user?.role === 'admin';
+  const isMentorOrOrganizer = user?.role === 'mentor' || user?.role === 'organizer';
 
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: colors.card,
-          borderTopColor: colors.border,
+          backgroundColor: theme === 'dark' ? '#1E293B' : '#FFFFFF',
+          borderTopColor: theme === 'dark' ? '#334155' : '#BAE6FD',
           paddingBottom: 8,
           paddingTop: 8,
           height: 60,
+          borderTopWidth: 1,
         },
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.textSecondary,
+        tabBarActiveTintColor: theme === 'dark' ? '#8B5CF6' : '#0EA5E9',
+        tabBarInactiveTintColor: theme === 'dark' ? '#94A3B8' : '#0369A1',
         tabBarIcon: ({ focused, color, size }) => {
           let iconName: any;
 
           if (route.name === 'Home') {
             iconName = focused ? 'home' : 'home-outline';
+          } else if (route.name === 'Problems') {
+            iconName = focused ? 'document-text' : 'document-text-outline';
           } else if (route.name === 'Mentor') {
             iconName = focused ? 'shield-checkmark' : 'shield-checkmark-outline';
-          } else if (route.name === 'Team') {
-            iconName = focused ? 'people' : 'people-outline';
+          } else if (route.name === 'AI') {
+            iconName = focused ? 'sparkles' : 'sparkles-outline';
           } else if (route.name === 'Profile') {
             iconName = focused ? 'person' : 'person-outline';
           }
@@ -88,7 +94,13 @@ const MainTabs = () => {
         options={{ tabBarLabel: 'Home' }}
       />
       
-      {isMentorOrAdmin && (
+      <Tab.Screen
+        name="Problems"
+        component={ProblemsStack}
+        options={{ tabBarLabel: 'Problems' }}
+      />
+      
+      {isMentorOrOrganizer && (
         <Tab.Screen
           name="Mentor"
           component={MentorStack}
@@ -97,9 +109,9 @@ const MainTabs = () => {
       )}
       
       <Tab.Screen
-        name="Team"
-        component={TeamStack}
-        options={{ tabBarLabel: 'Browse' }}
+        name="AI"
+        component={AIGeneratorScreen}
+        options={{ tabBarLabel: 'AI Generator' }}
       />
       
       <Tab.Screen
@@ -114,6 +126,7 @@ const MainTabs = () => {
 export type RootStackParamList = {
   Welcome: undefined;
   Auth: { initialMode?: 'signin' | 'signup' };
+  RoleSelection: { userData: { id: string; name: string; email: string; photoURL?: string } };
   Main: undefined;
 };
 
@@ -126,6 +139,7 @@ export const AppNavigator = () => {
         <>
           <RootStack.Screen name="Welcome" component={WelcomeScreen} />
           <RootStack.Screen name="Auth" component={AuthScreen} />
+          <RootStack.Screen name="RoleSelection" component={RoleSelectionScreen} />
         </>
       ) : (
         <RootStack.Screen name="Main" component={MainTabs} />

@@ -1,6 +1,6 @@
 export type DifficultyLevel = 'Easy' | 'Medium' | 'Hard' | 'Expert';
 export type ProblemStatus = 'pending' | 'approved' | 'rejected' | 'highlighted';
-export type UserRole = 'organizer' | 'mentor' | 'team' | 'admin';
+export type UserRole = 'mentor' | 'organizer' | 'participant';
 
 export interface User {
   id: string;

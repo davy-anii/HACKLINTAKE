@@ -1,13 +1,19 @@
 import { create } from 'zustand';
 import { ProblemStatement, User, FilterOptions } from '../types';
+import { UserStorage, SecureStorage, AutoLogin } from '../utils/secureStorage';
 
 interface AppState {
   user: User | null;
   problems: ProblemStatement[];
   filteredProblems: ProblemStatement[];
   filters: FilterOptions;
+  isLoading: boolean;
   
   setUser: (user: User | null) => void;
+  loginUser: (user: User, email: string, password: string) => Promise<void>;
+  logoutUser: () => Promise<void>;
+  loadUserFromStorage: () => Promise<void>;
+  updateUserProfile: (updates: Partial<User>) => Promise<void>;
   setProblems: (problems: ProblemStatement[]) => void;
   addProblem: (problem: ProblemStatement) => void;
   updateProblem: (id: string, updates: Partial<ProblemStatement>) => void;
@@ -23,8 +29,72 @@ export const useAppStore = create<AppState>((set, get) => ({
   problems: [],
   filteredProblems: [],
   filters: {},
+  isLoading: false,
 
   setUser: (user) => set({ user }),
+
+  // Login user and save to secure storage
+  loginUser: async (user, email, password) => {
+    try {
+      set({ isLoading: true });
+      await AutoLogin.saveSession(user, email, password);
+      set({ user, isLoading: false });
+    } catch (error) {
+      console.error('Error logging in user:', error);
+      set({ isLoading: false });
+    }
+  },
+
+  // Logout user and clear all data
+  logoutUser: async () => {
+    try {
+      set({ isLoading: true });
+      await AutoLogin.clearSession();
+      set({ user: null, isLoading: false });
+    } catch (error) {
+      console.error('Error logging out user:', error);
+      set({ isLoading: false });
+    }
+  },
+
+  // Load user from storage on app start
+  loadUserFromStorage: async () => {
+    try {
+      set({ isLoading: true });
+      const user = await AutoLogin.attemptAutoLogin();
+      if (user) {
+        const profileImage = await UserStorage.getProfileImage();
+        if (profileImage) {
+          user.photoURL = profileImage;
+        }
+        set({ user });
+      }
+      set({ isLoading: false });
+    } catch (error) {
+      console.error('Error loading user from storage:', error);
+      set({ isLoading: false });
+    }
+  },
+
+  // Update user profile and save to storage
+  updateUserProfile: async (updates) => {
+    try {
+      const currentUser = get().user;
+      if (currentUser) {
+        const updatedUser = { ...currentUser, ...updates };
+        await UserStorage.updateUser(updates);
+        
+        // Save profile image separately if updated
+        if (updates.photoURL) {
+          await UserStorage.saveProfileImage(updates.photoURL);
+        }
+        
+        set({ user: updatedUser });
+      }
+    } catch (error) {
+      console.error('Error updating user profile:', error);
+    }
+  },
 
   setProblems: (problems) => {
     set({ problems, filteredProblems: problems });

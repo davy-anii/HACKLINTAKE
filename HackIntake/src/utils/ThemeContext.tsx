@@ -25,33 +25,33 @@ interface ColorPalette {
 }
 
 const lightColors: ColorPalette = {
-  background: '#F9FAFB',
+  background: '#E0F2FE', // Sky blue background
   card: '#FFFFFF',
-  text: '#111827',
-  textSecondary: '#6B7280',
-  border: '#E5E7EB',
-  primary: '#6366F1',
-  secondary: '#A855F7',
-  accent: '#84CC16',
+  text: '#0C4A6E', // Deep blue text
+  textSecondary: '#0369A1', // Sky blue text
+  border: '#BAE6FD', // Light sky blue border
+  primary: '#0EA5E9', // Sky blue primary
+  secondary: '#38BDF8', // Bright sky blue
+  accent: '#22D3EE', // Cyan accent
   success: '#10B981',
   warning: '#F59E0B',
   error: '#EF4444',
-  shadow: 'rgba(0, 0, 0, 0.1)',
+  shadow: 'rgba(14, 165, 233, 0.15)', // Sky blue shadow
 };
 
 const darkColors: ColorPalette = {
-  background: '#0F172A',
+  background: '#0A0E27', // Deep navy background
   card: '#1E293B',
-  text: '#F1F5F9',
+  text: '#FFFFFF',
   textSecondary: '#94A3B8',
   border: '#334155',
-  primary: '#818CF8',
-  secondary: '#C084FC',
-  accent: '#84CC16',
-  success: '#34D399',
-  warning: '#FBBF24',
-  error: '#F87171',
-  shadow: 'rgba(0, 0, 0, 0.3)',
+  primary: '#2563EB', // Professional blue
+  secondary: '#60A5FA',
+  accent: '#8B5CF6', // Purple accent
+  success: '#10B981',
+  warning: '#F59E0B',
+  error: '#EF4444',
+  shadow: 'rgba(37, 99, 235, 0.2)', // Blue shadow
 };
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);

@@ -8,9 +8,12 @@ import { sampleProblems } from './src/utils/sampleData';
 
 function AppContent() {
   const { colors, theme } = useTheme();
-  const { setProblems, problems } = useAppStore();
+  const { setProblems, problems, loadUserFromStorage } = useAppStore();
 
   useEffect(() => {
+    // Load user from storage on app start
+    loadUserFromStorage();
+    
     // Only set sample problems if store is empty
     if (problems.length === 0) {
       setProblems(sampleProblems);

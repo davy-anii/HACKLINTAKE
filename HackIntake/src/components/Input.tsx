@@ -23,52 +23,62 @@ export const Input: React.FC<InputProps> = ({
   style,
   ...props
 }) => {
-  const { colors } = useTheme();
+  const { colors, theme } = useTheme();
+
+  // Theme-aware colors
+  const inputBg = theme === 'dark' ? '#0F172A' : '#F0F9FF';
+  const textColor = theme === 'dark' ? '#FFFFFF' : '#0C4A6E';
+  const labelColor = theme === 'dark' ? '#E2E8F0' : '#0C4A6E';
+  const borderColor = error ? '#EF4444' : (theme === 'dark' ? '#334155' : '#BAE6FD');
+  const placeholderColor = theme === 'dark' ? '#64748B' : '#0369A1';
 
   return (
     <View style={styles.container}>
       {label && (
-        <Text style={[styles.label, { color: colors.text }]}>{label}</Text>
+        <Text style={[styles.label, { color: labelColor }]}>{label}</Text>
       )}
       <TextInput
         style={[
           styles.input,
           {
-            backgroundColor: colors.card,
-            color: colors.text,
-            borderColor: error ? colors.error : colors.border,
+            backgroundColor: inputBg,
+            color: textColor,
+            borderColor: borderColor,
           },
           multiline && { height: rows * 40, textAlignVertical: 'top' },
           style,
         ]}
-        placeholderTextColor={colors.textSecondary}
+        placeholderTextColor={placeholderColor}
         multiline={multiline}
         numberOfLines={multiline ? rows : 1}
         {...props}
       />
-      {error && <Text style={[styles.error, { color: colors.error }]}>{error}</Text>}
+      {error && <Text style={[styles.error, { color: '#EF4444' }]}>{error}</Text>}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 16,
+    marginBottom: 20,
   },
   label: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 8,
+    fontSize: 15,
+    fontWeight: '700',
+    marginBottom: 10,
+    letterSpacing: 0.3,
   },
   input: {
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    borderWidth: 1,
+    paddingVertical: 14,
+    paddingHorizontal: 18,
+    borderRadius: 14,
+    borderWidth: 2,
     fontSize: 16,
+    fontWeight: '500',
   },
   error: {
-    fontSize: 12,
-    marginTop: 4,
+    fontSize: 13,
+    marginTop: 6,
+    fontWeight: '600',
   },
 });

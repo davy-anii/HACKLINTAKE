@@ -19,7 +19,18 @@ type WelcomeScreenProps = {
 const { width, height } = Dimensions.get('window');
 
 const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ navigation }) => {
-  const { colors, isDark } = useTheme();
+  const { colors, theme } = useTheme();
+  
+  // Theme-aware color scheme
+  const professionalColors = {
+    background: theme === 'dark' ? '#0A0E27' : '#E0F2FE',
+    primary: theme === 'dark' ? '#2563EB' : '#0EA5E9',
+    primaryLight: theme === 'dark' ? '#3B82F6' : '#38BDF8',
+    accent: theme === 'dark' ? '#60A5FA' : '#22D3EE',
+    cardBg: theme === 'dark' ? '#1E293B' : '#FFFFFF',
+    textPrimary: theme === 'dark' ? '#FFFFFF' : '#0C4A6E',
+    textSecondary: theme === 'dark' ? '#94A3B8' : '#0369A1',
+  };
   
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -133,7 +144,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ navigation }) => {
   });
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={[styles.container, { backgroundColor: professionalColors.background }]}>
       {/* Floating Background Icons */}
       <Animated.View
         style={[
@@ -141,7 +152,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ navigation }) => {
           { top: '15%', left: '10%', transform: [{ translateY: float1 }] },
         ]}
       >
-        <Ionicons name="bulb-outline" size={60} color={colors.primary} opacity={0.1} />
+        <Ionicons name="bulb-outline" size={60} color={professionalColors.accent} opacity={0.15} />
       </Animated.View>
       
       <Animated.View
@@ -150,7 +161,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ navigation }) => {
           { top: '25%', right: '15%', transform: [{ translateY: float2 }] },
         ]}
       >
-        <Ionicons name="rocket-outline" size={80} color={colors.primary} opacity={0.1} />
+        <Ionicons name="rocket-outline" size={80} color={professionalColors.primary} opacity={0.15} />
       </Animated.View>
       
       <Animated.View
@@ -159,7 +170,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ navigation }) => {
           { bottom: '20%', left: '20%', transform: [{ translateY: float3 }] },
         ]}
       >
-        <Ionicons name="code-slash-outline" size={70} color={colors.primary} opacity={0.1} />
+        <Ionicons name="code-slash-outline" size={70} color={professionalColors.primaryLight} opacity={0.15} />
       </Animated.View>
 
       <Animated.View
@@ -168,7 +179,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ navigation }) => {
           { bottom: '30%', right: '10%', transform: [{ translateY: float1 }] },
         ]}
       >
-        <Ionicons name="people-outline" size={65} color={colors.primary} opacity={0.1} />
+        <Ionicons name="people-outline" size={65} color={professionalColors.accent} opacity={0.15} />
       </Animated.View>
 
       {/* Main Content */}
@@ -188,43 +199,59 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ navigation }) => {
             { transform: [{ rotate: rotation }] },
           ]}
         >
-          <View style={[styles.logoCircle, { backgroundColor: colors.primary + '20' }]}>
-            <Ionicons name="rocket" size={80} color={colors.primary} />
+          <View style={[styles.logoCircle, { 
+            backgroundColor: professionalColors.primary + '30',
+            borderWidth: 3,
+            borderColor: professionalColors.primary + '50',
+          }]}>
+            <Ionicons name="rocket" size={80} color={professionalColors.primaryLight} />
           </View>
         </Animated.View>
 
         {/* App Name with Gradient Effect */}
         <Animated.View style={styles.titleContainer}>
-          <Text style={[styles.title, { color: colors.text }]}>
-            Hack<Text style={{ color: colors.primary }}>Intake</Text>
+          <Text style={[styles.title, { color: professionalColors.textPrimary }]}>
+            Hack<Text style={{ color: professionalColors.accent }}>Intake</Text>
           </Text>
-          <View style={[styles.titleUnderline, { backgroundColor: colors.primary }]} />
+          <View style={[styles.titleUnderline, { backgroundColor: professionalColors.primary }]} />
         </Animated.View>
 
         {/* Tagline */}
-        <Text style={[styles.tagline, { color: colors.textSecondary }]}>
+        <Text style={[styles.tagline, { color: professionalColors.textSecondary }]}>
           Where Innovation Meets Collaboration
         </Text>
 
         {/* Feature Cards */}
         <View style={styles.featuresContainer}>
-          <View style={[styles.featureCard, { backgroundColor: colors.card }]}>
-            <Ionicons name="flash" size={24} color={colors.primary} />
-            <Text style={[styles.featureText, { color: colors.text }]}>
+          <View style={[styles.featureCard, { 
+            backgroundColor: professionalColors.cardBg,
+            borderWidth: 1,
+            borderColor: professionalColors.primary + '30',
+          }]}>
+            <Ionicons name="flash" size={24} color={professionalColors.accent} />
+            <Text style={[styles.featureText, { color: professionalColors.textPrimary }]}>
               Submit Problems
             </Text>
           </View>
           
-          <View style={[styles.featureCard, { backgroundColor: colors.card }]}>
-            <Ionicons name="people" size={24} color={colors.primary} />
-            <Text style={[styles.featureText, { color: colors.text }]}>
+          <View style={[styles.featureCard, { 
+            backgroundColor: professionalColors.cardBg,
+            borderWidth: 1,
+            borderColor: professionalColors.primary + '30',
+          }]}>
+            <Ionicons name="people" size={24} color={professionalColors.accent} />
+            <Text style={[styles.featureText, { color: professionalColors.textPrimary }]}>
               Team Collaboration
             </Text>
           </View>
           
-          <View style={[styles.featureCard, { backgroundColor: colors.card }]}>
-            <Ionicons name="trophy" size={24} color={colors.primary} />
-            <Text style={[styles.featureText, { color: colors.text }]}>
+          <View style={[styles.featureCard, { 
+            backgroundColor: professionalColors.cardBg,
+            borderWidth: 1,
+            borderColor: professionalColors.primary + '30',
+          }]}>
+            <Ionicons name="trophy" size={24} color={professionalColors.accent} />
+            <Text style={[styles.featureText, { color: professionalColors.textPrimary }]}>
               Win Hackathons
             </Text>
           </View>
@@ -234,7 +261,10 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ navigation }) => {
         <View style={styles.buttonContainer}>
           <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
             <TouchableOpacity
-              style={[styles.primaryButton, { backgroundColor: colors.primary }]}
+              style={[styles.primaryButton, { 
+                backgroundColor: professionalColors.primary,
+                shadowColor: professionalColors.primaryLight,
+              }]}
               onPress={() => navigation.navigate('Auth', { initialMode: 'signup' })}
               activeOpacity={0.8}
             >
@@ -244,11 +274,14 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ navigation }) => {
           </Animated.View>
 
           <TouchableOpacity
-            style={[styles.secondaryButton, { borderColor: colors.border }]}
+            style={[styles.secondaryButton, { 
+              borderColor: professionalColors.primary,
+              backgroundColor: professionalColors.cardBg,
+            }]}
             onPress={() => navigation.navigate('Auth', { initialMode: 'signin' })}
             activeOpacity={0.7}
           >
-            <Text style={[styles.secondaryButtonText, { color: colors.text }]}>
+            <Text style={[styles.secondaryButtonText, { color: professionalColors.textPrimary }]}>
               I Already Have an Account
             </Text>
           </TouchableOpacity>
@@ -256,8 +289,8 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ navigation }) => {
 
         {/* Bottom Info */}
         <View style={styles.bottomInfo}>
-          <Ionicons name="shield-checkmark" size={16} color={colors.primary} />
-          <Text style={[styles.bottomText, { color: colors.textSecondary }]}>
+          <Ionicons name="shield-checkmark" size={16} color={professionalColors.accent} />
+          <Text style={[styles.bottomText, { color: professionalColors.textSecondary }]}>
             Secure & Free Forever
           </Text>
         </View>
@@ -289,9 +322,9 @@ const styles = StyleSheet.create({
     borderRadius: 80,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#6366F1',
+    shadowColor: '#2563EB',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.5,
     shadowRadius: 20,
     elevation: 10,
   },
@@ -328,11 +361,11 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 16,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowColor: '#2563EB',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
     shadowRadius: 8,
-    elevation: 3,
+    elevation: 5,
   },
   featureText: {
     fontSize: 12,
@@ -351,11 +384,11 @@ const styles = StyleSheet.create({
     paddingVertical: 18,
     paddingHorizontal: 32,
     borderRadius: 16,
-    shadowColor: '#6366F1',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
+    shadowColor: '#2563EB',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
     shadowRadius: 12,
-    elevation: 5,
+    elevation: 8,
     gap: 8,
   },
   primaryButtonText: {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
+  Animated,
+  ScrollView,
 } from 'react-native';
 import { useTheme } from '../utils/ThemeContext';
 import { useAppStore } from '../store/appStore';
@@ -15,9 +17,69 @@ import { Ionicons } from '@expo/vector-icons';
 import { ProblemStatus } from '../types';
 
 export const MentorPanelScreen = ({ navigation }: any) => {
-  const { colors } = useTheme();
+  const { colors, theme } = useTheme();
   const { filteredProblems, updateProblem, user } = useAppStore();
   const [selectedStatus, setSelectedStatus] = useState<ProblemStatus | 'all'>('pending');
+
+  // Dynamic colors based on theme
+  const mentorColors = {
+    background: theme === 'dark' ? '#0A0E27' : '#E0F2FE',
+    cardBg: theme === 'dark' ? '#1E293B' : '#FFFFFF',
+    primary: theme === 'dark' ? '#2563EB' : '#0EA5E9',
+    accent: theme === 'dark' ? '#60A5FA' : '#38BDF8',
+    success: '#10B981',
+    warning: '#F59E0B',
+    error: '#EF4444',
+    purple: theme === 'dark' ? '#8B5CF6' : '#22D3EE',
+    textPrimary: theme === 'dark' ? '#FFFFFF' : '#0C4A6E',
+    textSecondary: theme === 'dark' ? '#94A3B8' : '#0369A1',
+    border: theme === 'dark' ? '#334155' : '#BAE6FD',
+  };
+
+  // Animation values
+  const fadeAnim = useState(new Animated.Value(0))[0];
+  const slideAnim = useState(new Animated.Value(50))[0];
+  const scaleAnim = useState(new Animated.Value(0.9))[0];
+  const pulseAnim = useState(new Animated.Value(1))[0];
+
+  // Entrance animations
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+      Animated.spring(slideAnim, {
+        toValue: 0,
+        tension: 50,
+        friction: 7,
+        useNativeDriver: true,
+      }),
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        tension: 50,
+        friction: 7,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    // Pulse animation for stats
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.05,
+          duration: 1500,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 1500,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, []);
 
   const problemsByStatus = selectedStatus === 'all'
     ? filteredProblems
@@ -68,186 +130,286 @@ export const MentorPanelScreen = ({ navigation }: any) => {
     return filteredProblems.filter((p) => p.status === status).length;
   };
 
-  const renderProblemItem = ({ item }: any) => (
-    <View style={styles.problemContainer}>
-      <ProblemCard
-        problem={item}
-        onPress={() => navigation.navigate('ProblemDetail', { problemId: item.id })}
-      />
-      
-      <View style={[styles.actionsContainer, { backgroundColor: colors.card }]}>
-        {item.status === 'pending' && (
-          <>
-            <Button
-              title="Approve"
-              variant="primary"
-              size="sm"
-              onPress={() => handleApprove(item.id)}
-              style={styles.actionButton}
-            />
-            <Button
-              title="Reject"
-              variant="outline"
-              size="sm"
-              onPress={() => handleReject(item.id)}
-              style={styles.actionButton}
-            />
-          </>
-        )}
+  const renderProblemItem = ({ item, index }: any) => {
+    const itemFadeAnim = new Animated.Value(0);
+    const itemSlideAnim = new Animated.Value(30);
+
+    Animated.parallel([
+      Animated.timing(itemFadeAnim, {
+        toValue: 1,
+        duration: 400,
+        delay: index * 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(itemSlideAnim, {
+        toValue: 0,
+        duration: 400,
+        delay: index * 100,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    return (
+      <Animated.View
+        style={[
+          styles.problemContainer,
+          {
+            opacity: itemFadeAnim,
+            transform: [{ translateY: itemSlideAnim }],
+          },
+        ]}
+      >
+        <ProblemCard
+          problem={item}
+          onPress={() => navigation.navigate('ProblemDetail', { problemId: item.id })}
+        />
         
-        {item.status === 'approved' && (
-          <Button
-            title="⭐ Highlight"
-            variant="secondary"
-            size="sm"
-            onPress={() => handleHighlight(item.id)}
-            style={styles.actionButton}
-          />
-        )}
-        
-        {!item.assignedMentor && (
-          <Button
-            title="Assign to Me"
-            variant="ghost"
-            size="sm"
-            onPress={() => handleAssignMentor(item.id)}
-            style={styles.actionButton}
-          />
-        )}
-        
-        {item.assignedMentor && (
-          <View style={[styles.assignedBadge, { backgroundColor: colors.success + '20' }]}>
-            <Ionicons name="checkmark-circle" size={16} color={colors.success} />
-            <Text style={[styles.assignedText, { color: colors.success }]}>
-              Mentor Assigned
-            </Text>
-          </View>
-        )}
-      </View>
-    </View>
-  );
+        <View style={[styles.actionsContainer, { backgroundColor: mentorColors.cardBg }]}>
+          {item.status === 'pending' && (
+            <View style={styles.actionsRow}>
+              <TouchableOpacity
+                style={[styles.actionButton, { backgroundColor: mentorColors.success }]}
+                onPress={() => handleApprove(item.id)}
+              >
+                <Ionicons name="checkmark-circle" size={20} color="#FFF" />
+                <Text style={styles.actionButtonText}>Approve</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.actionButton, { backgroundColor: mentorColors.error }]}
+                onPress={() => handleReject(item.id)}
+              >
+                <Ionicons name="close-circle" size={20} color="#FFF" />
+                <Text style={styles.actionButtonText}>Reject</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+          
+          {item.status === 'approved' && (
+            <TouchableOpacity
+              style={[styles.actionButton, { backgroundColor: mentorColors.purple }]}
+              onPress={() => handleHighlight(item.id)}
+            >
+              <Ionicons name="star" size={20} color="#FFF" />
+              <Text style={styles.actionButtonText}>Highlight</Text>
+            </TouchableOpacity>
+          )}
+          
+          {!item.assignedMentor && (
+            <TouchableOpacity
+              style={[styles.actionButton, { backgroundColor: mentorColors.accent, marginTop: 8 }]}
+              onPress={() => handleAssignMentor(item.id)}
+            >
+              <Ionicons name="person-add" size={20} color="#FFF" />
+              <Text style={styles.actionButtonText}>Assign to Me</Text>
+            </TouchableOpacity>
+          )}
+          
+          {item.assignedMentor && (
+            <View style={[styles.assignedBadge, { backgroundColor: mentorColors.success + '20' }]}>
+              <Ionicons name="checkmark-circle" size={18} color={mentorColors.success} />
+              <Text style={[styles.assignedText, { color: mentorColors.success }]}>
+                ✓ Mentor Assigned
+              </Text>
+            </View>
+          )}
+        </View>
+      </Animated.View>
+    );
+  };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={styles.header}>
-        <Text style={[styles.title, { color: colors.text }]}>Mentor Panel</Text>
-      </View>
+    <View style={[styles.container, { backgroundColor: mentorColors.background }]}>
+      {/* Animated Header */}
+      <Animated.View
+        style={[
+          styles.header,
+          {
+            opacity: fadeAnim,
+            transform: [{ translateY: slideAnim }],
+          },
+        ]}
+      >
+        <View style={styles.headerTop}>
+          <View>
+            <Text style={[styles.title, { color: mentorColors.textPrimary }]}>
+              🛡️ Mentor Panel
+            </Text>
+            <Text style={[styles.subtitle, { color: mentorColors.textSecondary }]}>
+              Review and manage submissions
+            </Text>
+          </View>
+          <View style={[styles.mentorBadge, { backgroundColor: mentorColors.purple + '20' }]}>
+            <Ionicons name="shield-checkmark" size={24} color={mentorColors.purple} />
+          </View>
+        </View>
+      </Animated.View>
 
-      <View style={[styles.statsBar, { backgroundColor: colors.card }]}>
-        <View style={styles.statItem}>
-          <Text style={[styles.statNumber, { color: colors.warning }]}>
+      {/* Animated Stats Cards */}
+      <Animated.View
+        style={[
+          styles.statsContainer,
+          {
+            opacity: fadeAnim,
+            transform: [{ scale: scaleAnim }],
+          },
+        ]}
+      >
+        <Animated.View
+          style={[
+            styles.statCard,
+            { backgroundColor: mentorColors.cardBg, transform: [{ scale: pulseAnim }] },
+          ]}
+        >
+          <View style={[styles.statIconContainer, { backgroundColor: mentorColors.warning + '20' }]}>
+            <Ionicons name="time" size={28} color={mentorColors.warning} />
+          </View>
+          <Text style={[styles.statNumber, { color: mentorColors.textPrimary }]}>
             {getStatusCount('pending')}
           </Text>
-          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
-            Pending
+          <Text style={[styles.statLabel, { color: mentorColors.textSecondary }]}>
+            Pending Review
           </Text>
-        </View>
-        
-        <View style={styles.statDivider} />
-        
-        <View style={styles.statItem}>
-          <Text style={[styles.statNumber, { color: colors.success }]}>
+        </Animated.View>
+
+        <View style={[styles.statCard, { backgroundColor: mentorColors.cardBg }]}>
+          <View style={[styles.statIconContainer, { backgroundColor: mentorColors.success + '20' }]}>
+            <Ionicons name="checkmark-circle" size={28} color={mentorColors.success} />
+          </View>
+          <Text style={[styles.statNumber, { color: mentorColors.textPrimary }]}>
             {getStatusCount('approved')}
           </Text>
-          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+          <Text style={[styles.statLabel, { color: mentorColors.textSecondary }]}>
             Approved
           </Text>
         </View>
-        
-        <View style={styles.statDivider} />
-        
-        <View style={styles.statItem}>
-          <Text style={[styles.statNumber, { color: colors.accent }]}>
+
+        <View style={[styles.statCard, { backgroundColor: mentorColors.cardBg }]}>
+          <View style={[styles.statIconContainer, { backgroundColor: mentorColors.purple + '20' }]}>
+            <Ionicons name="star" size={28} color={mentorColors.purple} />
+          </View>
+          <Text style={[styles.statNumber, { color: mentorColors.textPrimary }]}>
             {getStatusCount('highlighted')}
           </Text>
-          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+          <Text style={[styles.statLabel, { color: mentorColors.textSecondary }]}>
             Highlighted
           </Text>
         </View>
-      </View>
+      </Animated.View>
 
-      <View style={styles.filterContainer}>
-        <TouchableOpacity
-          style={[
-            styles.filterTab,
-            {
-              backgroundColor: selectedStatus === 'all' ? colors.primary : colors.card,
-              borderColor: colors.border,
-            },
-          ]}
-          onPress={() => setSelectedStatus('all')}
-        >
-          <Text
+      {/* Animated Filter Tabs */}
+      <Animated.View
+        style={[
+          styles.filterContainer,
+          {
+            opacity: fadeAnim,
+          },
+        ]}
+      >
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <TouchableOpacity
             style={[
-              styles.filterTabText,
-              { color: selectedStatus === 'all' ? '#FFF' : colors.text },
+              styles.filterTab,
+              {
+                backgroundColor: selectedStatus === 'all' ? mentorColors.primary : mentorColors.cardBg,
+                borderColor: selectedStatus === 'all' ? mentorColors.primary : mentorColors.border,
+              },
             ]}
+            onPress={() => setSelectedStatus('all')}
           >
-            All
-          </Text>
-        </TouchableOpacity>
+            <Ionicons
+              name="apps"
+              size={18}
+              color={selectedStatus === 'all' ? '#FFF' : mentorColors.textSecondary}
+            />
+            <Text
+              style={[
+                styles.filterTabText,
+                { color: selectedStatus === 'all' ? '#FFF' : mentorColors.textPrimary },
+              ]}
+            >
+              All
+            </Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[
-            styles.filterTab,
-            {
-              backgroundColor: selectedStatus === 'pending' ? colors.warning : colors.card,
-              borderColor: colors.border,
-            },
-          ]}
-          onPress={() => setSelectedStatus('pending')}
-        >
-          <Text
+          <TouchableOpacity
             style={[
-              styles.filterTabText,
-              { color: selectedStatus === 'pending' ? '#FFF' : colors.text },
+              styles.filterTab,
+              {
+                backgroundColor: selectedStatus === 'pending' ? mentorColors.warning : mentorColors.cardBg,
+                borderColor: selectedStatus === 'pending' ? mentorColors.warning : mentorColors.border,
+              },
             ]}
+            onPress={() => setSelectedStatus('pending')}
           >
-            Pending
-          </Text>
-        </TouchableOpacity>
+            <Ionicons
+              name="time"
+              size={18}
+              color={selectedStatus === 'pending' ? '#FFF' : mentorColors.textSecondary}
+            />
+            <Text
+              style={[
+                styles.filterTabText,
+                { color: selectedStatus === 'pending' ? '#FFF' : mentorColors.textPrimary },
+              ]}
+            >
+              Pending
+            </Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[
-            styles.filterTab,
-            {
-              backgroundColor: selectedStatus === 'approved' ? colors.success : colors.card,
-              borderColor: colors.border,
-            },
-          ]}
-          onPress={() => setSelectedStatus('approved')}
-        >
-          <Text
+          <TouchableOpacity
             style={[
-              styles.filterTabText,
-              { color: selectedStatus === 'approved' ? '#FFF' : colors.text },
+              styles.filterTab,
+              {
+                backgroundColor: selectedStatus === 'approved' ? mentorColors.success : mentorColors.cardBg,
+                borderColor: selectedStatus === 'approved' ? mentorColors.success : mentorColors.border,
+              },
             ]}
+            onPress={() => setSelectedStatus('approved')}
           >
-            Approved
-          </Text>
-        </TouchableOpacity>
+            <Ionicons
+              name="checkmark-circle"
+              size={18}
+              color={selectedStatus === 'approved' ? '#FFF' : mentorColors.textSecondary}
+            />
+            <Text
+              style={[
+                styles.filterTabText,
+                { color: selectedStatus === 'approved' ? '#FFF' : mentorColors.textPrimary },
+              ]}
+            >
+              Approved
+            </Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[
-            styles.filterTab,
-            {
-              backgroundColor: selectedStatus === 'highlighted' ? colors.accent : colors.card,
-              borderColor: colors.border,
-            },
-          ]}
-          onPress={() => setSelectedStatus('highlighted')}
-        >
-          <Text
+          <TouchableOpacity
             style={[
-              styles.filterTabText,
-              { color: selectedStatus === 'highlighted' ? '#FFF' : colors.text },
+              styles.filterTab,
+              {
+                backgroundColor: selectedStatus === 'highlighted' ? mentorColors.purple : mentorColors.cardBg,
+                borderColor: selectedStatus === 'highlighted' ? mentorColors.purple : mentorColors.border,
+              },
             ]}
+            onPress={() => setSelectedStatus('highlighted')}
           >
-            ⭐ Top
-          </Text>
-        </TouchableOpacity>
-      </View>
+            <Ionicons
+              name="star"
+              size={18}
+              color={selectedStatus === 'highlighted' ? '#FFF' : mentorColors.textSecondary}
+            />
+            <Text
+              style={[
+                styles.filterTabText,
+                { color: selectedStatus === 'highlighted' ? '#FFF' : mentorColors.textPrimary },
+              ]}
+            >
+              Top Picks
+            </Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </Animated.View>
 
+      {/* Problems List */}
       <FlatList
         data={problemsByStatus}
         renderItem={renderProblemItem}
@@ -256,9 +418,12 @@ export const MentorPanelScreen = ({ navigation }: any) => {
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Ionicons name="clipboard-outline" size={64} color={colors.textSecondary} />
-            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+            <Ionicons name="clipboard-outline" size={64} color={mentorColors.textSecondary} />
+            <Text style={[styles.emptyText, { color: mentorColors.textPrimary }]}>
               No problems in this category
+            </Text>
+            <Text style={[styles.emptySubtext, { color: mentorColors.textSecondary }]}>
+              Check back later for new submissions
             </Text>
           </View>
         }
@@ -274,92 +439,161 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 20,
     paddingTop: 60,
-    paddingBottom: 16,
+    paddingBottom: 20,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-  },
-  statsBar: {
+  headerTop: {
     flexDirection: 'row',
-    marginHorizontal: 20,
-    marginBottom: 16,
-    padding: 16,
-    borderRadius: 12,
-    justifyContent: 'space-around',
-  },
-  statItem: {
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
+  title: {
+    fontSize: 32,
+    fontWeight: '800',
+    marginBottom: 4,
+  },
+  subtitle: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  mentorBadge: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#8B5CF6',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 20,
+    marginBottom: 24,
+    gap: 12,
+  },
+  statCard: {
+    flex: 1,
+    padding: 16,
+    borderRadius: 16,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  statIconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
   statNumber: {
-    fontSize: 24,
-    fontWeight: '700',
+    fontSize: 28,
+    fontWeight: '800',
+    marginBottom: 4,
   },
   statLabel: {
     fontSize: 12,
-    marginTop: 4,
-  },
-  statDivider: {
-    width: 1,
-    backgroundColor: '#E5E7EB',
+    fontWeight: '600',
+    textAlign: 'center',
   },
   filterContainer: {
-    flexDirection: 'row',
     paddingHorizontal: 20,
-    marginBottom: 16,
-    gap: 8,
+    marginBottom: 20,
   },
   filterTab: {
-    flex: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    borderRadius: 10,
-    borderWidth: 1,
+    flexDirection: 'row',
     alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    borderWidth: 2,
+    marginRight: 12,
+    gap: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   filterTabText: {
-    fontSize: 13,
-    fontWeight: '600',
+    fontSize: 14,
+    fontWeight: '700',
   },
   listContent: {
     paddingHorizontal: 20,
-    paddingBottom: 20,
+    paddingBottom: 100,
   },
   problemContainer: {
-    marginBottom: 8,
+    marginBottom: 16,
   },
   actionsContainer: {
+    padding: 16,
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16,
+    marginTop: -16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  actionsRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    padding: 12,
-    borderBottomLeftRadius: 12,
-    borderBottomRightRadius: 12,
-    marginTop: -12,
-    gap: 8,
+    gap: 12,
   },
   actionButton: {
     flex: 1,
-    minWidth: 100,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    gap: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  actionButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '700',
   },
   assignedBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
-    gap: 6,
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 12,
+    gap: 8,
+    marginTop: 8,
   },
   assignedText: {
-    fontSize: 12,
-    fontWeight: '600',
+    fontSize: 14,
+    fontWeight: '700',
   },
   emptyContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 60,
+    paddingVertical: 80,
   },
   emptyText: {
-    fontSize: 16,
+    fontSize: 18,
+    fontWeight: '700',
     marginTop: 16,
+  },
+  emptySubtext: {
+    fontSize: 14,
+    marginTop: 8,
+    textAlign: 'center',
   },
 });
