@@ -11,6 +11,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../utils/ThemeContext';
 import { useAppStore } from '../store/appStore';
 import { UserRole } from '../types';
+import { WelcomeModal } from '../components/WelcomeModal';
 
 interface RoleOption {
   id: UserRole;
@@ -27,6 +28,8 @@ export const RoleSelectionScreen = ({ route }: any) => {
   const { userData } = route.params; // { id, name, email, photoURL, password }
   const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(false);
+  const [pendingLoginData, setPendingLoginData] = useState<any>(null);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
@@ -57,10 +60,10 @@ export const RoleSelectionScreen = ({ route }: any) => {
   const roleColors = {
     background: theme === 'dark' ? '#0A0E27' : '#E0F2FE',
     cardBg: theme === 'dark' ? '#1E293B' : '#FFFFFF',
-    primary: theme === 'dark' ? '#2563EB' : '#0EA5E9',
-    accent: theme === 'dark' ? '#60A5FA' : '#38BDF8',
+    primary: theme === 'dark' ? '#60A5FA' : '#0EA5E9',
+    accent: theme === 'dark' ? '#93C5FD' : '#38BDF8',
     textPrimary: theme === 'dark' ? '#FFFFFF' : '#0C4A6E',
-    textSecondary: theme === 'dark' ? '#94A3B8' : '#0369A1',
+    textSecondary: theme === 'dark' ? '#E2E8F0' : '#0369A1',
     border: theme === 'dark' ? '#334155' : '#BAE6FD',
     success: theme === 'dark' ? '#10B981' : '#10B981',
   };
@@ -119,21 +122,37 @@ export const RoleSelectionScreen = ({ route }: any) => {
 
     setIsLoading(true);
     
-    // Create user with selected role and save to secure storage
-    try {
-      const user = {
-        ...userData,
-        role: selectedRole,
-      };
-      
-      // Save user data with credentials securely
-      await loginUser(user, userData.email, userData.password || '');
-      setIsLoading(false);
-      // Navigation will be handled automatically by AppNavigator
-    } catch (error) {
-      console.error('Error saving user:', error);
-      setIsLoading(false);
+    // Prepare user data but DON'T save to store yet (to prevent navigation)
+    const user = {
+      ...userData,
+      role: selectedRole,
+    };
+    
+    // Store temporarily for later
+    setPendingLoginData({ user, email: userData.email, password: userData.password || '' });
+    
+    // Show welcome modal FIRST
+    setIsLoading(false);
+    console.log('🎉 Showing welcome modal for:', userData.name);
+    setShowWelcome(true);
+    // Modal will call handleWelcomeClose which will complete login
+  };
+
+  const handleWelcomeClose = async () => {
+    console.log('👋 Welcome modal closed');
+    setShowWelcome(false);
+    
+    // NOW save the user to trigger navigation
+    if (pendingLoginData) {
+      try {
+        await loginUser(pendingLoginData.user, pendingLoginData.email, pendingLoginData.password);
+        setPendingLoginData(null);
+        console.log('✅ User logged in successfully');
+      } catch (error) {
+        console.error('Error during login:', error);
+      }
     }
+    // AppNavigator will automatically navigate to Main
   };
 
   return (
@@ -273,6 +292,13 @@ export const RoleSelectionScreen = ({ route }: any) => {
           </TouchableOpacity>
         </Animated.View>
       </ScrollView>
+
+      {/* Welcome Modal */}
+      <WelcomeModal
+        visible={showWelcome}
+        userName={userData.name}
+        onClose={handleWelcomeClose}
+      />
     </View>
   );
 };

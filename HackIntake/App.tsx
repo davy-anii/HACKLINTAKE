@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { ThemeProvider, useTheme } from './src/utils/ThemeContext';
+import { LanguageProvider } from './src/utils/LanguageContext';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { useAppStore } from './src/store/appStore';
 import { sampleProblems } from './src/utils/sampleData';
@@ -32,8 +33,10 @@ function AppContent() {
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <AppContent />
-    </ThemeProvider>
+    <LanguageProvider>
+      <ThemeProvider>
+        <AppContent />
+      </ThemeProvider>
+    </LanguageProvider>
   );
 }

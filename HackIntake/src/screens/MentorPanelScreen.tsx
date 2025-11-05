@@ -10,14 +10,17 @@ import {
   ScrollView,
 } from 'react-native';
 import { useTheme } from '../utils/ThemeContext';
+import { useLanguage } from '../utils/LanguageContext';
 import { useAppStore } from '../store/appStore';
 import { ProblemCard } from '../components/ProblemCard';
 import { Button } from '../components/Button';
 import { Ionicons } from '@expo/vector-icons';
 import { ProblemStatus } from '../types';
+import { PageAnimation } from '../components/PageAnimation';
 
 export const MentorPanelScreen = ({ navigation }: any) => {
   const { colors, theme } = useTheme();
+  const { t } = useLanguage();
   const { filteredProblems, updateProblem, user } = useAppStore();
   const [selectedStatus, setSelectedStatus] = useState<ProblemStatus | 'all'>('pending');
 
@@ -31,7 +34,7 @@ export const MentorPanelScreen = ({ navigation }: any) => {
     warning: '#F59E0B',
     error: '#EF4444',
     purple: theme === 'dark' ? '#8B5CF6' : '#22D3EE',
-    textPrimary: theme === 'dark' ? '#FFFFFF' : '#0C4A6E',
+    textPrimary: theme === 'dark' ? '#000000' : '#0C4A6E',
     textSecondary: theme === 'dark' ? '#94A3B8' : '#0369A1',
     border: theme === 'dark' ? '#334155' : '#BAE6FD',
   };
@@ -172,7 +175,7 @@ export const MentorPanelScreen = ({ navigation }: any) => {
                 onPress={() => handleApprove(item.id)}
               >
                 <Ionicons name="checkmark-circle" size={20} color="#FFF" />
-                <Text style={styles.actionButtonText}>Approve</Text>
+                <Text style={styles.actionButtonText}>{t('approve')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -180,7 +183,7 @@ export const MentorPanelScreen = ({ navigation }: any) => {
                 onPress={() => handleReject(item.id)}
               >
                 <Ionicons name="close-circle" size={20} color="#FFF" />
-                <Text style={styles.actionButtonText}>Reject</Text>
+                <Text style={styles.actionButtonText}>{t('reject')}</Text>
               </TouchableOpacity>
             </View>
           )}
@@ -191,7 +194,7 @@ export const MentorPanelScreen = ({ navigation }: any) => {
               onPress={() => handleHighlight(item.id)}
             >
               <Ionicons name="star" size={20} color="#FFF" />
-              <Text style={styles.actionButtonText}>Highlight</Text>
+              <Text style={styles.actionButtonText}>{t('highlight')}</Text>
             </TouchableOpacity>
           )}
           
@@ -201,7 +204,7 @@ export const MentorPanelScreen = ({ navigation }: any) => {
               onPress={() => handleAssignMentor(item.id)}
             >
               <Ionicons name="person-add" size={20} color="#FFF" />
-              <Text style={styles.actionButtonText}>Assign to Me</Text>
+              <Text style={styles.actionButtonText}>{t('assignToMe')}</Text>
             </TouchableOpacity>
           )}
           
@@ -209,7 +212,7 @@ export const MentorPanelScreen = ({ navigation }: any) => {
             <View style={[styles.assignedBadge, { backgroundColor: mentorColors.success + '20' }]}>
               <Ionicons name="checkmark-circle" size={18} color={mentorColors.success} />
               <Text style={[styles.assignedText, { color: mentorColors.success }]}>
-                ✓ Mentor Assigned
+                ✓ {t('mentorAssigned')}
               </Text>
             </View>
           )}
@@ -219,7 +222,8 @@ export const MentorPanelScreen = ({ navigation }: any) => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: mentorColors.background }]}>
+    <PageAnimation variant="mentor">
+    <View style={[styles.container, { backgroundColor: 'transparent' }]}>
       {/* Animated Header */}
       <Animated.View
         style={[
@@ -232,11 +236,11 @@ export const MentorPanelScreen = ({ navigation }: any) => {
       >
         <View style={styles.headerTop}>
           <View>
-            <Text style={[styles.title, { color: mentorColors.textPrimary }]}>
-              🛡️ Mentor Panel
+            <Text style={[styles.title, { color: theme === 'dark' ? '#000000' : mentorColors.textPrimary }]}>
+              🛡️ {t('mentorPanel')}
             </Text>
             <Text style={[styles.subtitle, { color: mentorColors.textSecondary }]}>
-              Review and manage submissions
+              {t('reviewAndManage')}
             </Text>
           </View>
           <View style={[styles.mentorBadge, { backgroundColor: mentorColors.purple + '20' }]}>
@@ -268,7 +272,7 @@ export const MentorPanelScreen = ({ navigation }: any) => {
             {getStatusCount('pending')}
           </Text>
           <Text style={[styles.statLabel, { color: mentorColors.textSecondary }]}>
-            Pending Review
+            {t('pendingReview')}
           </Text>
         </Animated.View>
 
@@ -280,7 +284,7 @@ export const MentorPanelScreen = ({ navigation }: any) => {
             {getStatusCount('approved')}
           </Text>
           <Text style={[styles.statLabel, { color: mentorColors.textSecondary }]}>
-            Approved
+            {t('approved')}
           </Text>
         </View>
 
@@ -292,7 +296,7 @@ export const MentorPanelScreen = ({ navigation }: any) => {
             {getStatusCount('highlighted')}
           </Text>
           <Text style={[styles.statLabel, { color: mentorColors.textSecondary }]}>
-            Highlighted
+            {t('highlighted')}
           </Text>
         </View>
       </Animated.View>
@@ -325,10 +329,10 @@ export const MentorPanelScreen = ({ navigation }: any) => {
             <Text
               style={[
                 styles.filterTabText,
-                { color: selectedStatus === 'all' ? '#FFF' : mentorColors.textPrimary },
+                { color: '#FFFFFF' },
               ]}
             >
-              All
+              {t('all')}
             </Text>
           </TouchableOpacity>
 
@@ -350,10 +354,10 @@ export const MentorPanelScreen = ({ navigation }: any) => {
             <Text
               style={[
                 styles.filterTabText,
-                { color: selectedStatus === 'pending' ? '#FFF' : mentorColors.textPrimary },
+                { color: '#FFFFFF' },
               ]}
             >
-              Pending
+              {t('pending')}
             </Text>
           </TouchableOpacity>
 
@@ -375,10 +379,10 @@ export const MentorPanelScreen = ({ navigation }: any) => {
             <Text
               style={[
                 styles.filterTabText,
-                { color: selectedStatus === 'approved' ? '#FFF' : mentorColors.textPrimary },
+                { color: '#FFFFFF' },
               ]}
             >
-              Approved
+              {t('approved')}
             </Text>
           </TouchableOpacity>
 
@@ -400,10 +404,10 @@ export const MentorPanelScreen = ({ navigation }: any) => {
             <Text
               style={[
                 styles.filterTabText,
-                { color: selectedStatus === 'highlighted' ? '#FFF' : mentorColors.textPrimary },
+                { color: '#FFFFFF' },
               ]}
             >
-              Top Picks
+              {t('topPicks')}
             </Text>
           </TouchableOpacity>
         </ScrollView>
@@ -429,6 +433,7 @@ export const MentorPanelScreen = ({ navigation }: any) => {
         }
       />
     </View>
+    </PageAnimation>
   );
 };
 

@@ -11,6 +11,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useTheme } from '../utils/ThemeContext';
+import { useLanguage } from '../utils/LanguageContext';
 import { useAppStore } from '../store/appStore';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
@@ -34,6 +35,7 @@ interface FormData {
 
 export const SubmitProblemScreen = ({ navigation }: any) => {
   const { colors } = useTheme();
+  const { t } = useLanguage();
   const { user, addProblem } = useAppStore();
   const [constraints, setConstraints] = useState<string[]>([]);
   const [requirements, setRequirements] = useState<string[]>([]);
@@ -125,7 +127,7 @@ export const SubmitProblemScreen = ({ navigation }: any) => {
     };
 
     addProblem(newProblem);
-    Alert.alert('Success', 'Problem submitted successfully!');
+    Alert.alert(t('success'), t('problemSubmittedSuccess'));
     
     // Reset form
     reset();
@@ -145,7 +147,7 @@ export const SubmitProblemScreen = ({ navigation }: any) => {
     >
       <View style={styles.content}>
         <Text style={[styles.header, { color: colors.text }]}>
-          Submit Problem Statement
+          {t('submitProblemStatement')}
         </Text>
 
         <Controller
@@ -153,8 +155,8 @@ export const SubmitProblemScreen = ({ navigation }: any) => {
           name="title"
           render={({ field: { onChange, onBlur, value } }) => (
             <Input
-              label="Problem Title *"
-              placeholder="Enter a clear and concise title"
+              label={`${t('problemTitle')} *`}
+              placeholder={t('enterTitlePlaceholder')}
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
@@ -164,7 +166,7 @@ export const SubmitProblemScreen = ({ navigation }: any) => {
         />
 
         <View style={styles.pickerContainer}>
-          <Text style={[styles.label, { color: colors.text }]}>Category *</Text>
+          <Text style={[styles.label, { color: colors.text }]}>{t('category')} *</Text>
           <Controller
             control={control}
             name="category"
@@ -204,7 +206,7 @@ export const SubmitProblemScreen = ({ navigation }: any) => {
 
         <View style={styles.pickerContainer}>
           <Text style={[styles.label, { color: colors.text }]}>
-            Difficulty Level *
+            {t('difficultyLevel')} *
           </Text>
           <Controller
             control={control}
@@ -248,8 +250,8 @@ export const SubmitProblemScreen = ({ navigation }: any) => {
           name="description"
           render={({ field: { onChange, onBlur, value } }) => (
             <Input
-              label="Description *"
-              placeholder="Provide a detailed description of the problem"
+              label={`${t('description')} *`}
+              placeholder={t('provideDetailedDescription')}
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
@@ -261,10 +263,10 @@ export const SubmitProblemScreen = ({ navigation }: any) => {
         />
 
         <View style={styles.section}>
-          <Text style={[styles.label, { color: colors.text }]}>Constraints</Text>
+          <Text style={[styles.label, { color: colors.text }]}>{t('constraints')}</Text>
           <View style={styles.inputRow}>
             <Input
-              placeholder="Add a constraint and press +"
+              placeholder={t('addConstraintPlaceholder')}
               value={constraintInput}
               onChangeText={setConstraintInput}
               style={styles.flexInput}
@@ -294,10 +296,10 @@ export const SubmitProblemScreen = ({ navigation }: any) => {
         </View>
 
         <View style={styles.section}>
-          <Text style={[styles.label, { color: colors.text }]}>Requirements</Text>
+          <Text style={[styles.label, { color: colors.text }]}>{t('requirements')}</Text>
           <View style={styles.inputRow}>
             <Input
-              placeholder="Add a requirement and press +"
+              placeholder={t('addRequirementPlaceholder')}
               value={requirementInput}
               onChangeText={setRequirementInput}
               style={styles.flexInput}
@@ -327,10 +329,10 @@ export const SubmitProblemScreen = ({ navigation }: any) => {
         </View>
 
         <View style={styles.section}>
-          <Text style={[styles.label, { color: colors.text }]}>Tags</Text>
+          <Text style={[styles.label, { color: colors.text }]}>{t('tags')}</Text>
           <View style={styles.inputRow}>
             <Input
-              placeholder="Add tags for better discovery"
+              placeholder={t('addTagsPlaceholder')}
               value={tagInput}
               onChangeText={setTagInput}
               style={styles.flexInput}
@@ -381,14 +383,14 @@ export const SubmitProblemScreen = ({ navigation }: any) => {
                 { color: urgent ? '#FFF' : colors.text },
               ]}
             >
-              Mark as Urgent
+              {t('markAsUrgent')}
             </Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.section}>
           <Text style={[styles.label, { color: colors.text }]}>
-            Attachments (Optional)
+            {t('attachmentsOptional')}
           </Text>
           <TouchableOpacity
             style={[
@@ -399,7 +401,7 @@ export const SubmitProblemScreen = ({ navigation }: any) => {
           >
             <Ionicons name="cloud-upload-outline" size={32} color={colors.primary} />
             <Text style={[styles.uploadText, { color: colors.text }]}>
-              Upload Files or Images
+              {t('uploadFilesOrImages')}
             </Text>
           </TouchableOpacity>
           {files.length > 0 && (
@@ -429,7 +431,7 @@ export const SubmitProblemScreen = ({ navigation }: any) => {
 
         <View style={styles.buttonContainer}>
           <Button
-            title="Submit Problem"
+            title={t('submitProblem')}
             onPress={handleSubmit(onSubmit)}
             size="lg"
           />

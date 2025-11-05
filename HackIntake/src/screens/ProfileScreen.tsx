@@ -13,18 +13,22 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useTheme } from '../utils/ThemeContext';
+import { useLanguage } from '../utils/LanguageContext';
 import { useAppStore } from '../store/appStore';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { PageAnimation } from '../components/PageAnimation';
 
 export const ProfileScreen = ({ navigation }: any) => {
   const { colors, theme, toggleTheme } = useTheme();
+  const { language, setLanguage, t } = useLanguage();
   const { user, setUser, problems, logoutUser } = useAppStore();
   const [profileImage, setProfileImage] = useState<string | null>(user?.photoURL || null);
   const [showNotificationsModal, setShowNotificationsModal] = useState(false);
   const [showHelpModal, setShowHelpModal] = useState(false);
   const [showAboutModal, setShowAboutModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showLanguageModal, setShowLanguageModal] = useState(false);
   
   // Settings state
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
@@ -34,6 +38,34 @@ export const ProfileScreen = ({ navigation }: any) => {
   const [mentorFeedback, setMentorFeedback] = useState(true);
   const [autoSave, setAutoSave] = useState(true);
   const [soundEffects, setSoundEffects] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState('English');
+
+  // Available languages
+  const languages = [
+    { code: 'en', name: 'English', flag: '🇬🇧' },
+    { code: 'es', name: 'Spanish', flag: '🇪🇸' },
+    { code: 'fr', name: 'French', flag: '🇫🇷' },
+    { code: 'de', name: 'German', flag: '🇩🇪' },
+    { code: 'it', name: 'Italian', flag: '🇮🇹' },
+    { code: 'hi', name: 'Hindi', flag: '🇮🇳' },
+    { code: 'pt', name: 'Portuguese', flag: '🇵🇹' },
+    { code: 'ru', name: 'Russian', flag: '🇷🇺' },
+    { code: 'zh', name: 'Chinese', flag: '🇨🇳' },
+    { code: 'ja', name: 'Japanese', flag: '🇯🇵' },
+    { code: 'ko', name: 'Korean', flag: '🇰🇷' },
+    { code: 'ar', name: 'Arabic', flag: '🇸🇦' },
+    { code: 'bn', name: 'Bengali', flag: '🇧🇩' },
+    { code: 'tr', name: 'Turkish', flag: '🇹🇷' },
+    { code: 'nl', name: 'Dutch', flag: '🇳🇱' },
+    { code: 'pl', name: 'Polish', flag: '🇵🇱' },
+    { code: 'vi', name: 'Vietnamese', flag: '🇻🇳' },
+    { code: 'th', name: 'Thai', flag: '🇹🇭' },
+    { code: 'id', name: 'Indonesian', flag: '🇮🇩' },
+    { code: 'sv', name: 'Swedish', flag: '🇸🇪' },
+  ];
+
+  // Get current language display name
+  const currentLanguageName = languages.find(lang => lang.code === language)?.name || 'English';
 
   // Professional colors - Now dynamic based on theme!
   const profileColors = {
@@ -229,12 +261,13 @@ export const ProfileScreen = ({ navigation }: any) => {
   };
 
   return (
+    <PageAnimation variant="profile">
     <ScrollView
-      style={[styles.container, { backgroundColor: profileColors.background }]}
+      style={[styles.container, { backgroundColor: 'transparent' }]}
       contentContainerStyle={styles.content}
     >
       <View style={styles.header}>
-        <Text style={[styles.title, { color: profileColors.textPrimary }]}>Profile</Text>
+        <Text style={[styles.title, { color: theme === 'dark' ? '#000000' : profileColors.textPrimary }]}>Profile</Text>
       </View>
 
       <Animated.View 
@@ -392,7 +425,7 @@ export const ProfileScreen = ({ navigation }: any) => {
           </View>
           <View style={styles.menuTextContainer}>
             <Text style={[styles.menuText, { color: profileColors.textPrimary }]}>
-              Settings
+              {t('settings')}
             </Text>
             <Text style={[styles.menuSubtext, { color: profileColors.textSecondary }]}>
               App preferences
@@ -426,7 +459,7 @@ export const ProfileScreen = ({ navigation }: any) => {
         
         <TouchableOpacity 
           style={styles.menuItem} 
-          onPress={() => setShowHelpModal(true)}
+          onPress={() => navigation.navigate('AISupport')}
           activeOpacity={0.7}
         >
           <View style={[styles.menuIconContainer, { backgroundColor: profileColors.success + '20' }]}>
@@ -437,7 +470,7 @@ export const ProfileScreen = ({ navigation }: any) => {
               Help & Support
             </Text>
             <Text style={[styles.menuSubtext, { color: profileColors.textSecondary }]}>
-              Get assistance
+              AI-powered assistance
             </Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color={profileColors.textSecondary} />
@@ -496,7 +529,7 @@ export const ProfileScreen = ({ navigation }: any) => {
           <View style={[styles.modalContent, { backgroundColor: profileColors.cardBg }]}>
             <View style={styles.modalHeader}>
               <Text style={[styles.modalTitle, { color: profileColors.textPrimary }]}>
-                ⚙️ Settings
+                {t('settingsTitle')}
               </Text>
               <TouchableOpacity onPress={() => setShowSettingsModal(false)}>
                 <Ionicons name="close" size={28} color={profileColors.textSecondary} />
@@ -690,16 +723,16 @@ export const ProfileScreen = ({ navigation }: any) => {
 
                 <TouchableOpacity 
                   style={[styles.settingRow, { backgroundColor: profileColors.background }]}
-                  onPress={() => Alert.alert('Language', 'Language selection coming soon!')}
+                  onPress={() => setShowLanguageModal(true)}
                 >
                   <View style={styles.settingLeft}>
                     <Ionicons name="language" size={22} color={profileColors.primary} />
                     <View style={styles.settingInfo}>
                       <Text style={[styles.settingTitle, { color: profileColors.textPrimary }]}>
-                        Language
+                        {t('language')}
                       </Text>
                       <Text style={[styles.settingSubtitle, { color: profileColors.textSecondary }]}>
-                        English (US)
+                        {currentLanguageName}
                       </Text>
                     </View>
                   </View>
@@ -1080,7 +1113,69 @@ export const ProfileScreen = ({ navigation }: any) => {
           </View>
         </View>
       </Modal>
+
+      {/* Language Selection Modal */}
+      <Modal
+        visible={showLanguageModal}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowLanguageModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { backgroundColor: profileColors.cardBg, maxHeight: '80%' }]}>
+            <View style={styles.modalHeader}>
+              <Text style={[styles.modalTitle, { color: profileColors.textPrimary }]}>
+                {t('selectLanguage')}
+              </Text>
+              <TouchableOpacity onPress={() => setShowLanguageModal(false)}>
+                <Ionicons name="close" size={28} color={profileColors.textSecondary} />
+              </TouchableOpacity>
+            </View>
+            
+            <ScrollView style={styles.modalBody} showsVerticalScrollIndicator={false}>
+              {languages.map((lang) => (
+                <TouchableOpacity
+                  key={lang.code}
+                  style={[
+                    styles.languageOption,
+                    { 
+                      backgroundColor: language === lang.code 
+                        ? profileColors.primary + '20' 
+                        : profileColors.background 
+                    }
+                  ]}
+                  onPress={() => {
+                    setLanguage(lang.code);
+                    setTimeout(() => {
+                      setShowLanguageModal(false);
+                    }, 200);
+                  }}
+                  activeOpacity={0.7}
+                >
+                  <View style={styles.languageLeft}>
+                    <Text style={styles.languageFlag}>{lang.flag}</Text>
+                    <Text style={[
+                      styles.languageName, 
+                      { 
+                        color: language === lang.code 
+                          ? profileColors.primary 
+                          : profileColors.textPrimary 
+                      }
+                    ]}>
+                      {lang.name}
+                    </Text>
+                  </View>
+                  {language === lang.code && (
+                    <Ionicons name="checkmark-circle" size={24} color={profileColors.primary} />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
+    </PageAnimation>
   );
 };
 
@@ -1524,5 +1619,26 @@ const styles = StyleSheet.create({
   },
   settingsFooterText: {
     fontSize: 11,
+  },
+  // Language modal styles
+  languageOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 10,
+  },
+  languageLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  languageFlag: {
+    fontSize: 28,
+  },
+  languageName: {
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

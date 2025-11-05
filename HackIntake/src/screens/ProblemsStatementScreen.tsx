@@ -9,13 +9,16 @@ import {
   ScrollView,
 } from 'react-native';
 import { useTheme } from '../utils/ThemeContext';
+import { useLanguage } from '../utils/LanguageContext';
 import { useAppStore } from '../store/appStore';
 import { ProblemCard } from '../components/ProblemCard';
 import { Ionicons } from '@expo/vector-icons';
 import { CATEGORIES, DIFFICULTY_LEVELS } from '../types';
+import { PageAnimation } from '../components/PageAnimation';
 
 export const ProblemsStatementScreen = ({ navigation }: any) => {
   const { colors, theme } = useTheme();
+  const { t } = useLanguage();
   const { filteredProblems, filters, setFilters } = useAppStore();
   const [showFilters, setShowFilters] = useState(false);
 
@@ -25,7 +28,7 @@ export const ProblemsStatementScreen = ({ navigation }: any) => {
     cardBg: theme === 'dark' ? '#1E293B' : '#FFFFFF',
     primary: theme === 'dark' ? '#2563EB' : '#0EA5E9',
     accent: theme === 'dark' ? '#60A5FA' : '#38BDF8',
-    textPrimary: theme === 'dark' ? '#FFFFFF' : '#0C4A6E',
+    textPrimary: theme === 'dark' ? '#000000' : '#0C4A6E',
     textSecondary: theme === 'dark' ? '#94A3B8' : '#0369A1',
     border: theme === 'dark' ? '#334155' : '#BAE6FD',
   };
@@ -56,15 +59,16 @@ export const ProblemsStatementScreen = ({ navigation }: any) => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: professionalColors.background }]}>
+    <PageAnimation variant="problems">
+    <View style={[styles.container, { backgroundColor: 'transparent' }]}>
       {/* Header */}
       <View style={styles.header}>
         <View>
-          <Text style={[styles.title, { color: professionalColors.textPrimary }]}>
-            Problem Statements
+          <Text style={[styles.title, { color: theme === 'dark' ? '#000000' : professionalColors.textPrimary }]}>
+            {t('problemStatements')}
           </Text>
           <Text style={[styles.subtitle, { color: professionalColors.textSecondary }]}>
-            Browse all hackathon problems
+            {t('browseAllProblems')}
           </Text>
         </View>
         <TouchableOpacity
@@ -81,7 +85,7 @@ export const ProblemsStatementScreen = ({ navigation }: any) => {
           <Ionicons name="search" size={20} color={professionalColors.textSecondary} />
           <TextInput
             style={[styles.searchInput, { color: professionalColors.textPrimary }]}
-            placeholder="Search problems..."
+            placeholder={t('searchProblems')}
             placeholderTextColor={professionalColors.textSecondary}
             value={filters.searchQuery || ''}
             onChangeText={handleSearch}
@@ -94,8 +98,8 @@ export const ProblemsStatementScreen = ({ navigation }: any) => {
           onPress={() => setShowFilters(!showFilters)}
         >
           <Ionicons name="options" size={20} color={professionalColors.accent} />
-          <Text style={[styles.filterButtonText, { color: professionalColors.textPrimary }]}>
-            Filters
+          <Text style={[styles.filterButtonText, { color: '#FFFFFF' }]}>
+            {t('filters')}
           </Text>
           <Ionicons
             name={showFilters ? 'chevron-up' : 'chevron-down'}
@@ -130,7 +134,7 @@ export const ProblemsStatementScreen = ({ navigation }: any) => {
                   { color: filters.urgent ? '#FFF' : professionalColors.textPrimary },
                 ]}
               >
-                Urgent Only
+                {t('urgentOnly')}
               </Text>
             </TouchableOpacity>
 
@@ -142,13 +146,13 @@ export const ProblemsStatementScreen = ({ navigation }: any) => {
               onPress={clearFilters}
             >
               <Text style={[styles.clearButtonText, { color: professionalColors.accent }]}>
-                Clear All
+                {t('clearAll')}
               </Text>
             </TouchableOpacity>
           </View>
 
           <View style={styles.filterSection}>
-            <Text style={[styles.filterLabel, { color: professionalColors.textPrimary }]}>Category</Text>
+            <Text style={[styles.filterLabel, { color: professionalColors.textPrimary }]}>{t('category')}</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               <View style={styles.filterChips}>
                 {CATEGORIES.map((cat) => (
@@ -166,7 +170,7 @@ export const ProblemsStatementScreen = ({ navigation }: any) => {
                     <Text
                       style={[
                         styles.filterChipText,
-                        { color: filters.category === cat ? '#FFF' : professionalColors.textPrimary },
+                        { color: '#FFFFFF' },
                       ]}
                     >
                       {cat}
@@ -178,7 +182,7 @@ export const ProblemsStatementScreen = ({ navigation }: any) => {
           </View>
 
           <View style={styles.filterSection}>
-            <Text style={[styles.filterLabel, { color: professionalColors.textPrimary }]}>Difficulty</Text>
+            <Text style={[styles.filterLabel, { color: professionalColors.textPrimary }]}>{t('difficulty')}</Text>
             <View style={styles.filterChips}>
               {DIFFICULTY_LEVELS.map((level) => (
                 <TouchableOpacity
@@ -209,8 +213,8 @@ export const ProblemsStatementScreen = ({ navigation }: any) => {
 
       {/* Results Count */}
       <View style={styles.resultsCount}>
-        <Text style={[styles.resultsText, { color: professionalColors.textSecondary }]}>
-          {filteredProblems.length} problem{filteredProblems.length !== 1 ? 's' : ''} found
+        <Text style={[styles.resultsText, { color: '#FFFFFF' }]}>
+          {filteredProblems.length} {t('problemsFound')}
         </Text>
       </View>
 
@@ -230,15 +234,16 @@ export const ProblemsStatementScreen = ({ navigation }: any) => {
           <View style={styles.emptyContainer}>
             <Ionicons name="folder-open-outline" size={64} color={professionalColors.textSecondary} />
             <Text style={[styles.emptyText, { color: professionalColors.textPrimary }]}>
-              No problems found
+              {t('noProblemsFound')}
             </Text>
             <Text style={[styles.emptySubtext, { color: professionalColors.textSecondary }]}>
-              Try adjusting your filters or submit a new problem!
+              {t('tryAdjustingFilters')}
             </Text>
           </View>
         }
       />
     </View>
+    </PageAnimation>
   );
 };
 

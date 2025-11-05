@@ -2,7 +2,9 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
+import { Platform } from 'react-native';
 import { useTheme } from '../utils/ThemeContext';
+import { useLanguage } from '../utils/LanguageContext';
 import { useAppStore } from '../store/appStore';
 
 import { DashboardScreen } from '../screens/DashboardScreen';
@@ -12,6 +14,7 @@ import { ProfileScreen } from '../screens/ProfileScreen';
 import { ProblemDetailScreen } from '../screens/ProblemDetailScreen';
 import { ProblemsStatementScreen } from '../screens/ProblemsStatementScreen';
 import { AIGeneratorScreen } from '../screens/AIGeneratorScreen';
+import { AISupportScreen } from '../screens/AISupportScreen';
 import { AuthScreen } from '../screens/AuthScreen';
 import { RoleSelectionScreen } from '../screens/RoleSelectionScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
@@ -22,17 +25,30 @@ const RootStack = createNativeStackNavigator();
 
 const HomeStack = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator 
+      screenOptions={{ 
+        headerShown: false,
+        animation: 'fade_from_bottom',
+        animationDuration: 300,
+      }}
+    >
       <Stack.Screen name="Dashboard" component={DashboardScreen} />
       <Stack.Screen name="SubmitProblem" component={SubmitProblemScreen} />
       <Stack.Screen name="ProblemDetail" component={ProblemDetailScreen} />
+      <Stack.Screen name="AISupport" component={AISupportScreen} />
     </Stack.Navigator>
   );
 };
 
 const MentorStack = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator 
+      screenOptions={{ 
+        headerShown: false,
+        animation: 'fade_from_bottom',
+        animationDuration: 300,
+      }}
+    >
       <Stack.Screen name="MentorPanel" component={MentorPanelScreen} />
       <Stack.Screen name="ProblemDetail" component={ProblemDetailScreen} />
     </Stack.Navigator>
@@ -41,7 +57,13 @@ const MentorStack = () => {
 
 const ProblemsStack = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator 
+      screenOptions={{ 
+        headerShown: false,
+        animation: 'fade_from_bottom',
+        animationDuration: 300,
+      }}
+    >
       <Stack.Screen name="ProblemsStatement" component={ProblemsStatementScreen} />
       <Stack.Screen name="SubmitProblem" component={SubmitProblemScreen} />
       <Stack.Screen name="ProblemDetail" component={ProblemDetailScreen} />
@@ -49,8 +71,24 @@ const ProblemsStack = () => {
   );
 };
 
+const ProfileStack = () => {
+  return (
+    <Stack.Navigator 
+      screenOptions={{ 
+        headerShown: false,
+        animation: 'fade_from_bottom',
+        animationDuration: 300,
+      }}
+    >
+      <Stack.Screen name="ProfileMain" component={ProfileScreen} />
+      <Stack.Screen name="AISupport" component={AISupportScreen} />
+    </Stack.Navigator>
+  );
+};
+
 const MainTabs = () => {
   const { colors, theme } = useTheme();
+  const { t } = useLanguage();
   const { user } = useAppStore();
 
   const isMentorOrOrganizer = user?.role === 'mentor' || user?.role === 'organizer';
@@ -59,6 +97,7 @@ const MainTabs = () => {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
+        animation: 'shift',
         tabBarStyle: {
           backgroundColor: theme === 'dark' ? '#1E293B' : '#FFFFFF',
           borderTopColor: theme === 'dark' ? '#334155' : '#BAE6FD',
@@ -66,9 +105,22 @@ const MainTabs = () => {
           paddingTop: 8,
           height: 60,
           borderTopWidth: 1,
+          elevation: 8,
+          shadowColor: theme === 'dark' ? '#8B5CF6' : '#0EA5E9',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 8,
         },
         tabBarActiveTintColor: theme === 'dark' ? '#8B5CF6' : '#0EA5E9',
         tabBarInactiveTintColor: theme === 'dark' ? '#94A3B8' : '#0369A1',
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: '600',
+        },
+        tabBarIconStyle: {
+          marginTop: 4,
+        },
+        tabBarHideOnKeyboard: Platform.OS === 'android',
         tabBarIcon: ({ focused, color, size }) => {
           let iconName: any;
 
@@ -91,33 +143,33 @@ const MainTabs = () => {
       <Tab.Screen
         name="Home"
         component={HomeStack}
-        options={{ tabBarLabel: 'Home' }}
+        options={{ tabBarLabel: t('home') }}
       />
       
       <Tab.Screen
         name="Problems"
         component={ProblemsStack}
-        options={{ tabBarLabel: 'Problems' }}
+        options={{ tabBarLabel: t('problems') }}
       />
       
       {isMentorOrOrganizer && (
         <Tab.Screen
           name="Mentor"
           component={MentorStack}
-          options={{ tabBarLabel: 'Mentor' }}
+          options={{ tabBarLabel: t('mentor') }}
         />
       )}
       
       <Tab.Screen
         name="AI"
         component={AIGeneratorScreen}
-        options={{ tabBarLabel: 'AI Generator' }}
+        options={{ tabBarLabel: t('aiGenerator') }}
       />
       
       <Tab.Screen
         name="Profile"
-        component={ProfileScreen}
-        options={{ tabBarLabel: 'Profile' }}
+        component={ProfileStack}
+        options={{ tabBarLabel: t('profile') }}
       />
     </Tab.Navigator>
   );

@@ -9,11 +9,14 @@ import {
   Animated,
 } from 'react-native';
 import { useTheme } from '../utils/ThemeContext';
+import { useLanguage } from '../utils/LanguageContext';
 import { useAppStore } from '../store/appStore';
 import { Ionicons } from '@expo/vector-icons';
+import { PageAnimation } from '../components/PageAnimation';
 
 export const DashboardScreen = ({ navigation }: any) => {
   const { colors, theme } = useTheme();
+  const { t } = useLanguage();
   const { problems, user } = useAppStore();
   const [refreshing, setRefreshing] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -28,7 +31,7 @@ export const DashboardScreen = ({ navigation }: any) => {
     success: '#10B981',
     warning: '#F59E0B',
     error: '#EF4444',
-    textPrimary: theme === 'dark' ? '#FFFFFF' : '#0C4A6E',
+    textPrimary: theme === 'dark' ? '#000000' : '#0C4A6E',
     textSecondary: theme === 'dark' ? '#94A3B8' : '#0369A1',
     border: theme === 'dark' ? '#334155' : '#BAE6FD',
     shadow: theme === 'dark' ? 'rgba(37, 99, 235, 0.2)' : 'rgba(14, 165, 233, 0.15)',
@@ -85,22 +88,23 @@ export const DashboardScreen = ({ navigation }: any) => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: dashboardColors.background }]}>
-      <ScrollView
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor={dashboardColors.primary}
-          />
-        }
-        showsVerticalScrollIndicator={false}
-      >
+    <PageAnimation variant="home">
+      <View style={[styles.container, { backgroundColor: 'transparent' }]}>
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={dashboardColors.primary}
+            />
+          }
+          showsVerticalScrollIndicator={false}
+        >
         {/* Header with Live Status */}
         <View style={styles.header}>
           <View>
-            <Text style={[styles.title, { color: dashboardColors.textPrimary }]}>
-              Dashboard
+            <Text style={[styles.title, { color: theme === 'dark' ? '#000000' : dashboardColors.textPrimary }]}>
+              {t('dashboard')}
             </Text>
             <View style={styles.liveStatus}>
               <Animated.View
@@ -119,63 +123,79 @@ export const DashboardScreen = ({ navigation }: any) => {
         {/* Statistics Cards Section */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: dashboardColors.textPrimary }]}>
-            📊 Overview
+            {t('overview')}
           </Text>
           <View style={styles.statsGrid}>
-            <View style={[styles.statCard, { backgroundColor: dashboardColors.cardBg }]}>
+            <TouchableOpacity 
+              style={[styles.statCard, { backgroundColor: dashboardColors.cardBg }]}
+              onPress={() => navigation.navigate('Problems')}
+              activeOpacity={0.7}
+            >
               <View style={[styles.statIconContainer, { backgroundColor: dashboardColors.primary + '20' }]}>
                 <Ionicons name="document-text" size={24} color={dashboardColors.primary} />
               </View>
-              <Text style={[styles.statValue, { color: dashboardColors.textPrimary }]}>
+              <Text style={[styles.statValue, { color: theme === 'dark' ? '#FFFFFF' : '#0C4A6E' }]}>
                 {stats.total}
               </Text>
-              <Text style={[styles.statLabel, { color: dashboardColors.textSecondary }]}>
-                Total Problems
+              <Text style={[styles.statLabel, { color: theme === 'dark' ? '#FFFFFF' : '#0C4A6E' }]}>
+                {t('totalProblems')}
               </Text>
-            </View>
+            </TouchableOpacity>
 
-            <View style={[styles.statCard, { backgroundColor: dashboardColors.cardBg }]}>
+            <TouchableOpacity 
+              style={[styles.statCard, { backgroundColor: dashboardColors.cardBg }]}
+              onPress={() => navigation.navigate('Problems', { filter: 'pending' })}
+              activeOpacity={0.7}
+            >
               <View style={[styles.statIconContainer, { backgroundColor: dashboardColors.warning + '20' }]}>
                 <Ionicons name="time" size={24} color={dashboardColors.warning} />
               </View>
-              <Text style={[styles.statValue, { color: dashboardColors.textPrimary }]}>
+              <Text style={[styles.statValue, { color: theme === 'dark' ? '#FFFFFF' : '#0C4A6E' }]}>
                 {stats.pending}
               </Text>
-              <Text style={[styles.statLabel, { color: dashboardColors.textSecondary }]}>
-                Pending Review
+              <Text style={[styles.statLabel, { color: theme === 'dark' ? '#FFFFFF' : '#0C4A6E' }]}>
+                {t('pendingReview')}
               </Text>
-            </View>
+            </TouchableOpacity>
 
-            <View style={[styles.statCard, { backgroundColor: dashboardColors.cardBg }]}>
+            <TouchableOpacity 
+              style={[styles.statCard, { backgroundColor: dashboardColors.cardBg }]}
+              onPress={() => navigation.navigate('Problems', { filter: 'approved' })}
+              activeOpacity={0.7}
+            >
               <View style={[styles.statIconContainer, { backgroundColor: dashboardColors.success + '20' }]}>
                 <Ionicons name="checkmark-circle" size={24} color={dashboardColors.success} />
               </View>
-              <Text style={[styles.statValue, { color: dashboardColors.textPrimary }]}>
+              <Text style={[styles.statValue, { color: theme === 'dark' ? '#FFFFFF' : '#0C4A6E' }]}>
                 {stats.approved}
               </Text>
-              <Text style={[styles.statLabel, { color: dashboardColors.textSecondary }]}>
-                Approved
+              <Text style={[styles.statLabel, { color: theme === 'dark' ? '#FFFFFF' : '#0C4A6E' }]}>
+                {t('approved')}
               </Text>
-            </View>
+            </TouchableOpacity>
 
-            <View style={[styles.statCard, { backgroundColor: dashboardColors.cardBg }]}>
+            <TouchableOpacity 
+              style={[styles.statCard, { backgroundColor: dashboardColors.cardBg }]}
+              onPress={() => navigation.navigate('Problems', { filter: 'urgent' })}
+              activeOpacity={0.7}
+            >
               <View style={[styles.statIconContainer, { backgroundColor: dashboardColors.error + '20' }]}>
                 <Ionicons name="alert-circle" size={24} color={dashboardColors.error} />
               </View>
-              <Text style={[styles.statValue, { color: dashboardColors.textPrimary }]}>
+              <Text style={[styles.statValue, { color: theme === 'dark' ? '#FFFFFF' : '#0C4A6E' }]}>
                 {stats.urgent}
               </Text>
-              <Text style={[styles.statLabel, { color: dashboardColors.textSecondary }]}>
-                Urgent
+              <Text style={[styles.statLabel, { color: theme === 'dark' ? '#FFFFFF' : '#0C4A6E' }]}>
+                {t('urgent')}
               </Text>
-            </View>
+            </TouchableOpacity>
           </View>
         </View>
 
         {/* Quick Actions Section */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: dashboardColors.textPrimary }]}>
-            ⚡ Quick Actions
+            ⚡ {t('quickActions')}
           </Text>
           <View style={styles.quickActions}>
             <TouchableOpacity
@@ -183,8 +203,8 @@ export const DashboardScreen = ({ navigation }: any) => {
               onPress={() => navigation.navigate('SubmitProblem')}
             >
               <Ionicons name="document" size={28} color={dashboardColors.primary} />
-              <Text style={[styles.actionText, { color: dashboardColors.textPrimary }]}>
-                Submit Problem
+              <Text style={[styles.actionText, { color: theme === 'dark' ? '#FFFFFF' : '#0C4A6E' }]}>
+                {t('submitProblem')}
               </Text>
             </TouchableOpacity>
 
@@ -193,8 +213,8 @@ export const DashboardScreen = ({ navigation }: any) => {
               onPress={() => navigation.navigate('Problems')}
             >
               <Ionicons name="document-text" size={28} color={dashboardColors.accent} />
-              <Text style={[styles.actionText, { color: dashboardColors.textPrimary }]}>
-                View All Problems
+              <Text style={[styles.actionText, { color: theme === 'dark' ? '#FFFFFF' : '#0C4A6E' }]}>
+                {t('viewAllProblems')}
               </Text>
             </TouchableOpacity>
 
@@ -203,8 +223,8 @@ export const DashboardScreen = ({ navigation }: any) => {
               onPress={() => navigation.navigate('Profile')}
             >
               <Ionicons name="person" size={28} color={dashboardColors.success} />
-              <Text style={[styles.actionText, { color: dashboardColors.textPrimary }]}>
-                My Profile
+              <Text style={[styles.actionText, { color: theme === 'dark' ? '#FFFFFF' : '#0C4A6E' }]}>
+                {t('myProfile')}
               </Text>
             </TouchableOpacity>
           </View>
@@ -214,11 +234,11 @@ export const DashboardScreen = ({ navigation }: any) => {
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={[styles.sectionTitle, { color: dashboardColors.textPrimary }]}>
-              🕒 Recent Activity
+              🕒 {t('recentActivity')}
             </Text>
             <TouchableOpacity onPress={() => navigation.navigate('Problems')}>
               <Text style={[styles.seeAll, { color: dashboardColors.accent }]}>
-                See All →
+                {t('seeAll')} →
               </Text>
             </TouchableOpacity>
           </View>
@@ -252,10 +272,10 @@ export const DashboardScreen = ({ navigation }: any) => {
                   />
                 </View>
                 <View style={styles.activityContent}>
-                  <Text style={[styles.activityTitle, { color: dashboardColors.textPrimary }]}>
+                  <Text style={[styles.activityTitle, { color: theme === 'dark' ? '#FFFFFF' : '#0C4A6E' }]}>
                     {problem.title}
                   </Text>
-                  <Text style={[styles.activitySubtitle, { color: dashboardColors.textSecondary }]}>
+                  <Text style={[styles.activitySubtitle, { color: theme === 'dark' ? '#E2E8F0' : '#64748B' }]}>
                     {problem.category} • {problem.createdBy}
                   </Text>
                 </View>
@@ -269,7 +289,8 @@ export const DashboardScreen = ({ navigation }: any) => {
 
         <View style={{ height: 100 }} />
       </ScrollView>
-    </View>
+      </View>
+    </PageAnimation>
   );
 };
 
