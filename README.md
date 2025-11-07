@@ -5,8 +5,7 @@
 
 
 
-![HACKLINTAKE](https://github.com/user-attachments/assets/77069fb4-86e0-4f2b-8f06-625955a0ded5)
-
+![adaptive-icon](https://github.com/user-attachments/assets/7102b71b-db72-49ad-b69a-af7c16cfb1b7)
 
 
 
