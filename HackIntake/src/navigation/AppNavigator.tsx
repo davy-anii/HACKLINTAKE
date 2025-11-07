@@ -17,6 +17,8 @@ import { AIGeneratorScreen } from '../screens/AIGeneratorScreen';
 import { AISupportScreen } from '../screens/AISupportScreen';
 import { AuthScreen } from '../screens/AuthScreen';
 import { RoleSelectionScreen } from '../screens/RoleSelectionScreen';
+import { OrganizerDashboardScreen } from '../screens/OrganizerDashboardScreen';
+import { ParticipantQRScreen } from '../screens/ParticipantQRScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
 
 const Tab = createBottomTabNavigator();
@@ -41,6 +43,9 @@ const HomeStack = () => {
 };
 
 const MentorStack = () => {
+  const { user } = useAppStore();
+  const isOrganizer = user?.role === 'organizer';
+  
   return (
     <Stack.Navigator 
       screenOptions={{ 
@@ -49,7 +54,11 @@ const MentorStack = () => {
         animationDuration: 300,
       }}
     >
-      <Stack.Screen name="MentorPanel" component={MentorPanelScreen} />
+      {isOrganizer ? (
+        <Stack.Screen name="OrganizerDashboard" component={OrganizerDashboardScreen} />
+      ) : (
+        <Stack.Screen name="MentorPanel" component={MentorPanelScreen} />
+      )}
       <Stack.Screen name="ProblemDetail" component={ProblemDetailScreen} />
     </Stack.Navigator>
   );
@@ -92,6 +101,7 @@ const MainTabs = () => {
   const { user } = useAppStore();
 
   const isMentorOrOrganizer = user?.role === 'mentor' || user?.role === 'organizer';
+  const isParticipant = user?.role === 'participant';
 
   return (
     <Tab.Navigator
@@ -130,6 +140,8 @@ const MainTabs = () => {
             iconName = focused ? 'document-text' : 'document-text-outline';
           } else if (route.name === 'Mentor') {
             iconName = focused ? 'shield-checkmark' : 'shield-checkmark-outline';
+          } else if (route.name === 'QRCode') {
+            iconName = focused ? 'qr-code' : 'qr-code-outline';
           } else if (route.name === 'AI') {
             iconName = focused ? 'sparkles' : 'sparkles-outline';
           } else if (route.name === 'Profile') {
@@ -156,7 +168,15 @@ const MainTabs = () => {
         <Tab.Screen
           name="Mentor"
           component={MentorStack}
-          options={{ tabBarLabel: t('mentor') }}
+          options={{ tabBarLabel: user?.role === 'organizer' ? 'Organizer' : t('mentor') }}
+        />
+      )}
+      
+      {isParticipant && (
+        <Tab.Screen
+          name="QRCode"
+          component={ParticipantQRScreen}
+          options={{ tabBarLabel: 'My QR' }}
         />
       )}
       

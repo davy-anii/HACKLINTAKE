@@ -1,0 +1,34 @@
+{
+  "project_info": {
+    "project_number": "47030025405",
+    "project_id": "hacklintake-6c89f",
+    "storage_bucket": "hacklintake-6c89f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:47030025405:android:64cec7c0e137e8f7cc0bd4",
+        "android_client_info": {
+          "package_name": "com.hackintake.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "47030025405-PLACEHOLDER.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBhqAxjkQrdqaHu1YexDHQJDrMh-vcvoc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

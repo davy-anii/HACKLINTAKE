@@ -28,7 +28,7 @@ export const ProblemsStatementScreen = ({ navigation }: any) => {
     cardBg: theme === 'dark' ? '#1E293B' : '#FFFFFF',
     primary: theme === 'dark' ? '#2563EB' : '#0EA5E9',
     accent: theme === 'dark' ? '#60A5FA' : '#38BDF8',
-    textPrimary: theme === 'dark' ? '#000000' : '#0C4A6E',
+    textPrimary: theme === 'dark' ? '#FFFFFF' : '#0C4A6E',
     textSecondary: theme === 'dark' ? '#94A3B8' : '#0369A1',
     border: theme === 'dark' ? '#334155' : '#BAE6FD',
   };
@@ -64,7 +64,7 @@ export const ProblemsStatementScreen = ({ navigation }: any) => {
       {/* Header */}
       <View style={styles.header}>
         <View>
-          <Text style={[styles.title, { color: theme === 'dark' ? '#000000' : professionalColors.textPrimary }]}>
+          <Text style={[styles.title, { color: professionalColors.textPrimary }]}>
             {t('problemStatements')}
           </Text>
           <Text style={[styles.subtitle, { color: professionalColors.textSecondary }]}>
@@ -98,7 +98,7 @@ export const ProblemsStatementScreen = ({ navigation }: any) => {
           onPress={() => setShowFilters(!showFilters)}
         >
           <Ionicons name="options" size={20} color={professionalColors.accent} />
-          <Text style={[styles.filterButtonText, { color: '#FFFFFF' }]}>
+          <Text style={[styles.filterButtonText, { color: professionalColors.textPrimary }]}>
             {t('filters')}
           </Text>
           <Ionicons
@@ -170,7 +170,7 @@ export const ProblemsStatementScreen = ({ navigation }: any) => {
                     <Text
                       style={[
                         styles.filterChipText,
-                        { color: '#FFFFFF' },
+                        { color: filters.category === cat ? '#FFFFFF' : professionalColors.textPrimary },
                       ]}
                     >
                       {cat}
@@ -213,7 +213,7 @@ export const ProblemsStatementScreen = ({ navigation }: any) => {
 
       {/* Results Count */}
       <View style={styles.resultsCount}>
-        <Text style={[styles.resultsText, { color: '#FFFFFF' }]}>
+        <Text style={[styles.resultsText, { color: professionalColors.textPrimary }]}>
           {filteredProblems.length} {t('problemsFound')}
         </Text>
       </View>

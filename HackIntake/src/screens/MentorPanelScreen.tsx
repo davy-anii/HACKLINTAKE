@@ -34,7 +34,7 @@ export const MentorPanelScreen = ({ navigation }: any) => {
     warning: '#F59E0B',
     error: '#EF4444',
     purple: theme === 'dark' ? '#8B5CF6' : '#22D3EE',
-    textPrimary: theme === 'dark' ? '#000000' : '#0C4A6E',
+    textPrimary: theme === 'dark' ? '#FFFFFF' : '#0C4A6E',
     textSecondary: theme === 'dark' ? '#94A3B8' : '#0369A1',
     border: theme === 'dark' ? '#334155' : '#BAE6FD',
   };
@@ -236,7 +236,7 @@ export const MentorPanelScreen = ({ navigation }: any) => {
       >
         <View style={styles.headerTop}>
           <View>
-            <Text style={[styles.title, { color: theme === 'dark' ? '#000000' : mentorColors.textPrimary }]}>
+            <Text style={[styles.title, { color: mentorColors.textPrimary }]}>
               🛡️ {t('mentorPanel')}
             </Text>
             <Text style={[styles.subtitle, { color: mentorColors.textSecondary }]}>

@@ -42,7 +42,7 @@ export const AIGeneratorScreen = ({ navigation }: any) => {
     success: theme === 'dark' ? '#10B981' : '#10B981',
     purple: theme === 'dark' ? '#8B5CF6' : '#7C3AED',
     pink: theme === 'dark' ? '#EC4899' : '#EC4899',
-    textPrimary: theme === 'dark' ? '#000000' : '#0C4A6E',
+    textPrimary: theme === 'dark' ? '#FFFFFF' : '#0C4A6E',
     textSecondary: theme === 'dark' ? '#94A3B8' : '#0369A1',
     border: theme === 'dark' ? '#334155' : '#BAE6FD',
   };
@@ -199,7 +199,7 @@ export const AIGeneratorScreen = ({ navigation }: any) => {
         >
           <View style={styles.headerContent}>
             <View>
-              <Text style={[styles.title, { color: theme === 'dark' ? '#000000' : aiColors.textPrimary }]}>
+              <Text style={[styles.title, { color: aiColors.textPrimary }]}>
                 🤖 AI Generator
               </Text>
               <Text style={[styles.subtitle, { color: aiColors.textSecondary }]}>

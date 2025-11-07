@@ -31,7 +31,7 @@ export const DashboardScreen = ({ navigation }: any) => {
     success: '#10B981',
     warning: '#F59E0B',
     error: '#EF4444',
-    textPrimary: theme === 'dark' ? '#000000' : '#0C4A6E',
+    textPrimary: theme === 'dark' ? '#FFFFFF' : '#0C4A6E',
     textSecondary: theme === 'dark' ? '#94A3B8' : '#0369A1',
     border: theme === 'dark' ? '#334155' : '#BAE6FD',
     shadow: theme === 'dark' ? 'rgba(37, 99, 235, 0.2)' : 'rgba(14, 165, 233, 0.15)',
@@ -103,7 +103,7 @@ export const DashboardScreen = ({ navigation }: any) => {
         {/* Header with Live Status */}
         <View style={styles.header}>
           <View>
-            <Text style={[styles.title, { color: theme === 'dark' ? '#000000' : dashboardColors.textPrimary }]}>
+            <Text style={[styles.title, { color: dashboardColors.textPrimary }]}>
               {t('dashboard')}
             </Text>
             <View style={styles.liveStatus}>

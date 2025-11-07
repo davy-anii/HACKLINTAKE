@@ -12,6 +12,7 @@ import { useTheme } from '../utils/ThemeContext';
 import { useAppStore } from '../store/appStore';
 import { UserRole } from '../types';
 import { WelcomeModal } from '../components/WelcomeModal';
+import { saveUser } from '../firebase/firebaseService';
 
 interface RoleOption {
   id: UserRole;
@@ -145,6 +146,14 @@ export const RoleSelectionScreen = ({ route }: any) => {
     // NOW save the user to trigger navigation
     if (pendingLoginData) {
       try {
+        // Save user to Firebase first
+        await saveUser(pendingLoginData.user.id, {
+          ...pendingLoginData.user,
+          registeredAt: new Date(),
+        });
+        console.log('💾 User saved to Firebase');
+        
+        // Then save to local store to trigger navigation
         await loginUser(pendingLoginData.user, pendingLoginData.email, pendingLoginData.password);
         setPendingLoginData(null);
         console.log('✅ User logged in successfully');

@@ -267,7 +267,7 @@ export const ProfileScreen = ({ navigation }: any) => {
       contentContainerStyle={styles.content}
     >
       <View style={styles.header}>
-        <Text style={[styles.title, { color: theme === 'dark' ? '#000000' : profileColors.textPrimary }]}>Profile</Text>
+        <Text style={[styles.title, { color: profileColors.textPrimary }]}>Profile</Text>
       </View>
 
       <Animated.View 
